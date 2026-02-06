@@ -14,6 +14,18 @@ class SihatiApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       title: 'Sihati',
       theme: SihatiTheme.light(),
+      // دعم اللغة العربية والاتجاه من اليمين لليسار
+      locale: const Locale('ar', 'DZ'),
+      supportedLocales: const [
+        Locale('ar', 'DZ'), // العربية - الجزائر
+        Locale('ar', ''),   // العربية - عامة
+      ],
+      builder: (context, child) {
+        return Directionality(
+          textDirection: TextDirection.rtl,
+          child: child ?? const SizedBox(),
+        );
+      },
       routerConfig: router,
     );
   }
