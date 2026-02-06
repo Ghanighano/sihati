@@ -26,7 +26,7 @@ class SihatiTheme {
           color: Color(0xFF0F172A),
         ),
       ),
-      cardTheme: CardThemeData(
+      cardTheme: CardTheme(
         elevation: 0,
         color: Colors.white,
         surfaceTintColor: Colors.transparent,
