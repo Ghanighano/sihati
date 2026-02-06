@@ -1,20 +1,53 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class HomeSearchScreen extends StatefulWidget {
+import '../data/providers/auth_providers.dart';
+
+class HomeSearchScreen extends ConsumerStatefulWidget {
   const HomeSearchScreen({super.key});
 
   @override
-  State<HomeSearchScreen> createState() => _HomeSearchScreenState();
+  ConsumerState<HomeSearchScreen> createState() => _HomeSearchScreenState();
 }
 
-class _HomeSearchScreenState extends State<HomeSearchScreen> {
+class _HomeSearchScreenState extends ConsumerState<HomeSearchScreen> {
   String specialty = 'طب عام';
   String wilaya = 'الجزائر';
   String commune = 'باب الزوار';
 
+  Future<void> _logout() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('تسجيل الخروج'),
+        content: const Text('هل أنت متأكد من تسجيل الخروج؟'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('إلغاء'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('تسجيل الخروج'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      await ref.read(authRepositoryProvider).signOut();
+      if (mounted) {
+        context.go('/auth/phone');
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // الحصول على بيانات المستخدم الحالي
+    final currentUserAsync = ref.watch(currentUserProvider);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sihati'),
@@ -23,6 +56,43 @@ class _HomeSearchScreenState extends State<HomeSearchScreen> {
             tooltip: 'مواعيدي',
             onPressed: () => context.push('/appointments'),
             icon: const Icon(Icons.event_note_rounded),
+          ),
+          PopupMenuButton(
+            icon: const Icon(Icons.account_circle),
+            tooltip: 'الحساب',
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                child: currentUserAsync.when(
+                  data: (user) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        user?.displayName ?? 'مستخدم',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        user?.phoneNumber ?? '',
+                        style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                      ),
+                    ],
+                  ),
+                  loading: () => const Text('جاري التحميل...'),
+                  error: (_, __) => const Text('خطأ'),
+                ),
+              ),
+              const PopupMenuDivider(),
+              PopupMenuItem(
+                onTap: _logout,
+                child: const Row(
+                  children: [
+                    Icon(Icons.logout, size: 20),
+                    SizedBox(width: 8),
+                    Text('تسجيل الخروج'),
+                  ],
+                ),
+              ),
+            ],
           ),
         ],
       ),
