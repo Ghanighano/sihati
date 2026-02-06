@@ -153,7 +153,8 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                           textDirection: TextDirection.ltr,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
-                            LengthLimitingTextInputFormatter(10),
+                            // السماح بـ 9 أرقام فقط (بدون الصفر الأول)
+                            LengthLimitingTextInputFormatter(9),
                           ],
                           decoration: const InputDecoration(
                             hintText: '5XX XXX XXX',
@@ -165,11 +166,7 @@ class _PhoneInputScreenState extends ConsumerState<PhoneInputScreen> {
                               return 'الرجاء إدخال رقم الهاتف';
                             }
                             
-                            // إزالة الصفر الأول إن وجد
                             String phone = value.trim();
-                            if (phone.startsWith('0')) {
-                              phone = phone.substring(1);
-                            }
                             
                             if (phone.length != 9) {
                               return 'رقم الهاتف يجب أن يكون 9 أرقام';

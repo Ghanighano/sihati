@@ -68,7 +68,9 @@ class _HomeSearchScreenState extends ConsumerState<HomeSearchScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        user?.displayName ?? 'مستخدم',
+                        user?.displayName?.isNotEmpty == true 
+                            ? user!.displayName! 
+                            : 'مستخدم صحتي',
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       Text(

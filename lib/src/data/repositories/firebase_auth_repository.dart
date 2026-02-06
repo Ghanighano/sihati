@@ -11,7 +11,12 @@ class FirebaseAuthRepository implements AuthRepository {
 
   final FirebaseAuth _firebaseAuth;
 
-  // مخزن مؤقت لبيانات المستخدمين (في production، استخدم Firestore)
+  // مخزن مؤقت لبيانات المستخدمين (في الذاكرة فقط)
+  // ⚠️ تحذير: هذا المخزن يفقد البيانات عند إعادة تشغيل التطبيق
+  // TODO: في الإنتاج، استبدل هذا بحل دائم مثل:
+  // - Cloud Firestore لتخزين البيانات في السحابة
+  // - Hive أو Isar لقاعدة بيانات محلية
+  // - SharedPreferences للبيانات البسيطة
   final Map<String, Map<String, dynamic>> _userDataCache = {};
 
   @override
@@ -127,7 +132,7 @@ class FirebaseAuthRepository implements AuthRepository {
     // في production، استخدم Firestore أو قاعدة بيانات أخرى
     _userDataCache[userId] = {
       'userType': userType.name,
-      'displayName': displayName,
+      'displayName': displayName ?? 'مستخدم صحتي', // قيمة افتراضية إذا لم يتم تقديم اسم
       'savedAt': DateTime.now().toIso8601String(),
     };
     
